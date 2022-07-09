@@ -50,50 +50,49 @@ void APlayerCharacterBase::PostInitializeComponents()
 	PlayerCharacterMovement = Cast<UPlayerCharacterMovementComponent>(GetMovementComponent());
 }
 
+void APlayerCharacterBase::SetSprinting(bool Sprint)
+{
+	bIsSprinting = Sprint;
+	PlayerCharacterMovement->bWantsToSprint = Sprint;
+
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		ServerSetSprinting(Sprint);
+	}
+}
+
+void APlayerCharacterBase::ServerSetSprinting_Implementation(bool Sprint)
+{
+	SetSprinting(Sprint);
+}
+
+bool APlayerCharacterBase::ServerSetSprinting_Validate(bool Sprint)
+{
+	return true;
+}
+
 void APlayerCharacterBase::Sprint()
 {
-	if (PlayerCharacterMovement)
+	if(CanSprint()) 
 	{
-		if (CanSprint())
-		{
-			PlayerCharacterMovement->bWantsToSprint = true;
-		}
-	#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
-		else if (!PlayerCharacterMovement->CanEverSprint())
-		{
-			UE_LOG(LogPlayerCharacter, Log, TEXT("%s is trying to sprint, but crouching is disabled on this character! (check Player Character Movement)"), *GetName());
-		}
-	#endif
+		SetSprinting(true);
 	}
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+	else if (!PlayerCharacterMovement->CanEverCrouch())
+	{
+		UE_LOG(LogPlayerCharacter, Log, TEXT("%s is trying to sprint, but sprinting is disabled on this character! (check PlayerCharacterMovement)"), *GetName());
+	}
+#endif
 }
 
 void APlayerCharacterBase::UnSprint()
 {
-	if (PlayerCharacterMovement) 
-	{
-		PlayerCharacterMovement->bWantsToSprint = false;
-	}
+	SetSprinting(false);
 }
 
 bool APlayerCharacterBase::CanSprint() const
 {
 	return !PlayerCharacterMovement->bWantsToSprint && PlayerCharacterMovement && PlayerCharacterMovement->CanEverSprint() && GetRootComponent() && !GetRootComponent()->IsSimulatingPhysics();
-}
-
-void APlayerCharacterBase::OnRep_IsSprinting()
-{
-	if (PlayerCharacterMovement)
-	{
-		if (bIsSprinting)
-		{
-			PlayerCharacterMovement->bWantsToSprint = true;
-		}
-		else
-		{
-			PlayerCharacterMovement->bWantsToSprint = false;
-		}
-		PlayerCharacterMovement->bNetworkUpdateReceived = true;
-	}
 }
 
 bool APlayerCharacterBase::CanJumpInternal_Implementation() const

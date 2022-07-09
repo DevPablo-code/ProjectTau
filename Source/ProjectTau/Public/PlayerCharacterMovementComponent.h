@@ -59,12 +59,6 @@ public:
 	bool CanSprintInCurrentState() const;
 
 	UFUNCTION(BlueprintCallable, Category = "Player Character Movement")
-	void Sprint(bool bClientSimulation);
-
-	UFUNCTION(BlueprintCallable, Category = "Player Character Movement")
-	void UnSprint(bool bClientSimulation);
-
-	UFUNCTION(BlueprintCallable, Category = "Player Character Movement")
 	bool IsSprinting() const;
 
 public:

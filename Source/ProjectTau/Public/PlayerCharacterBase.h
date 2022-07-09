@@ -41,8 +41,10 @@ public:
 	virtual void PostInitializeComponents() override;
 public:
 #pragma region Sprint
-	UPROPERTY(BlueprintReadOnly, replicatedUsing = OnRep_IsSprinting, Category = "Player Character")
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Player Character")
 	uint32 bIsSprinting:1;
+
+	void SetSprinting(bool Sprint);
 
 	UFUNCTION(BlueprintCallable, Category = "Player Character")
 	void Sprint();
@@ -50,11 +52,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Player Character")
 	void UnSprint();
 
+	UFUNCTION(Reliable, Server, WithValidation)
+	void ServerSetSprinting(bool Sprint);
+
 	UFUNCTION(BlueprintCallable, Category = "Player Character")
 	bool CanSprint() const;      
-
-	UFUNCTION()
-	void OnRep_IsSprinting();
 #pragma endregion
 #pragma region Can Jump
 	virtual bool CanJumpInternal_Implementation() const override;

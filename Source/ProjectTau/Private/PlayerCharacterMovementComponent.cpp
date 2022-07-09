@@ -73,17 +73,9 @@ void UPlayerCharacterMovementComponent::UpdateCharacterStateBeforeMovement(float
 {
 	Super::UpdateCharacterStateBeforeMovement(DeltaSeconds);
 
-	if (CharacterOwner->GetLocalRole() != ROLE_SimulatedProxy)
+	if (IsSprinting() && !CanSprintInCurrentState())
 	{
-		const bool bIsSprinting = IsSprinting();
-		if (bIsSprinting && (!bWantsToSprint || !CanSprintInCurrentState()))
-		{
-			UnSprint(false);
-		}
-		else if (!bIsSprinting && bWantsToSprint && CanSprintInCurrentState())
-		{
-			Sprint(false);
-		}
+		PlayerCharacterOwner->SetSprinting(false);
 	}
 }
 
@@ -91,13 +83,9 @@ void UPlayerCharacterMovementComponent::UpdateCharacterStateAfterMovement(float 
 {
 	Super::UpdateCharacterStateAfterMovement(DeltaSeconds);
 
-	if (CharacterOwner->GetLocalRole() != ROLE_SimulatedProxy)
+	if (IsSprinting() && !CanSprintInCurrentState())
 	{
-		// Unsprint if no longer allowed to be sprint
-		if (IsSprinting() && !CanSprintInCurrentState())
-		{
-			UnSprint(false);
-		}
+		PlayerCharacterOwner->SetSprinting(false);
 	}
 }
 
@@ -127,37 +115,6 @@ bool UPlayerCharacterMovementComponent::CanSprintInCurrentState() const
 	forward2D.Normalize();
 
 	return (IsFalling() || IsMovingOnGround()) && UpdatedComponent && !UpdatedComponent->IsSimulatingPhysics() && !bWantsToCrouch && FVector::DotProduct(velocity2D, forward2D) > 0.5;
-}
-
-void UPlayerCharacterMovementComponent::Sprint(bool bClientSimulation)
-{
-	if (!HasValidData())
-	{
-		return;
-	}
-
-	if (!bClientSimulation && !CanSprintInCurrentState())
-	{
-		return;
-	}
-
-	if (!bClientSimulation)
-	{
-		PlayerCharacterOwner->bIsSprinting = true;
-	}
-}
-
-void UPlayerCharacterMovementComponent::UnSprint(bool bClientSimulation)
-{
-	if (!HasValidData())
-	{
-		return;
-	}
-
-	if (!bClientSimulation) 
-	{
-		PlayerCharacterOwner->bIsSprinting = false;
-	}
 }
 
 bool UPlayerCharacterMovementComponent::IsSprinting() const
