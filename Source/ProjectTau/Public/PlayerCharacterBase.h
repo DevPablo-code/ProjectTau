@@ -39,6 +39,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void PostInitializeComponents() override;
+
+	bool IsMovingForward() const;
 public:
 #pragma region Sprint
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "Player Character")

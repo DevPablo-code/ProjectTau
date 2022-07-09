@@ -50,6 +50,18 @@ void APlayerCharacterBase::PostInitializeComponents()
 	PlayerCharacterMovement = Cast<UPlayerCharacterMovementComponent>(GetMovementComponent());
 }
 
+bool APlayerCharacterBase::IsMovingForward() const
+{
+	FVector velocity2D = GetVelocity();
+	FVector forward2D = GetActorForwardVector();
+	velocity2D.Z = 0.0f;
+	forward2D.Z = 0.0f;
+	velocity2D.Normalize();
+	forward2D.Normalize();
+
+	return FVector::DotProduct(velocity2D, forward2D) > 0.5;
+}
+
 void APlayerCharacterBase::SetSprinting(bool Sprint)
 {
 	bIsSprinting = Sprint;

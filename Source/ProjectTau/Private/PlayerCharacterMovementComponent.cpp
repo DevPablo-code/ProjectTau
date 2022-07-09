@@ -107,14 +107,7 @@ bool UPlayerCharacterMovementComponent::CanSprintInCurrentState() const
 		return false;
 	}
 
-	FVector velocity2D = GetPawnOwner()->GetVelocity();
-	FVector forward2D = GetPawnOwner()->GetActorForwardVector();
-	velocity2D.Z = 0.0f;
-	forward2D.Z = 0.0f;
-	velocity2D.Normalize();
-	forward2D.Normalize();
-
-	return (IsFalling() || IsMovingOnGround()) && UpdatedComponent && !UpdatedComponent->IsSimulatingPhysics() && !bWantsToCrouch && FVector::DotProduct(velocity2D, forward2D) > 0.5;
+	return (IsFalling() || IsMovingOnGround()) && UpdatedComponent && !UpdatedComponent->IsSimulatingPhysics() && !bWantsToCrouch && PlayerCharacterOwner->IsMovingForward();
 }
 
 bool UPlayerCharacterMovementComponent::IsSprinting() const
