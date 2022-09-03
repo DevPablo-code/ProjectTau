@@ -17,7 +17,7 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacterBase(const FObjectInitializer& ObjectInitializer);
 
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&* OutLifetimeProps) const;
 
 private:
 	UPROPERTY(Category = "Player Character", VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
